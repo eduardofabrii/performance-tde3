@@ -1,11 +1,13 @@
 import java.util.concurrent.*;
 
 public class CorridaComSemaphore {
-   static int count = 0;
+   static int count = 0;                                 
+              //imita um lock                           //modo justo
    static final Semaphore sem = new Semaphore(1, true); 
 
    public static void main(String[] args) throws Exception {
      int T = 8, M = 250_000;
+    //lógica de inicialização igual a anterior
      ExecutorService pool = Executors.newFixedThreadPool(T);
      
      Runnable r = () -> {
