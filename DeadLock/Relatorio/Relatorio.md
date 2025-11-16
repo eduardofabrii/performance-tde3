@@ -46,10 +46,6 @@ public class DeadlockDemo {
 
         t1.start();
         t2.start();
-
-        t1.join();
-        t2.join();
-        
         System.out.println("Sistema iniciado. Aguardando conclusão...");
     }
     //causa o conflito de tempo
@@ -62,10 +58,6 @@ public class DeadlockDemo {
     }
 }
 ```
-
-#### Observação sobre o uso de `join()`
-
-O uso de `t1.join()` e `t2.join()` faz com que a thread principal (main) aguarde até que ambas as threads terminem sua execução. No contexto do deadlock, isso significa que o programa principal ficará bloqueado indefinidamente caso ocorra o impasse, evidenciando claramente o travamento do sistema pela espera circular. Sem o `join()`, o programa poderia finalizar antes das threads realmente travarem, dificultando a observação do deadlock. Portanto, o uso de `join()` é importante para demonstrar o impasse de forma reprodutível e visível.
 
 Bom, neste código ele esta forçando um deadlock, como o professor especificou, a única diferenca são os dois outputs, que evidenciam os logs de aquisição e o travamento observado:
 
@@ -80,13 +72,55 @@ Percebemos que o programa trava infinitamente após as threads imprimirem suas e
 3. Não preempção. O **lock** não pode ser preemptado, ou ser tomado via força bruta. A **t1** deve liberar o **lock_a** voluntariamente, ação que ela só vai efetuar após obter o lock_b
 4. Espera circular. Igualmente na atividade 1, no ***Jantar dos filosofos**,* neste caso há uma espera de recursos por ambas as partes, ou seja, é a condição fatal que resulta nas outras 3, **T1** espera por **T2** para liberar o **lock_b**, enquanto o **T2** espera o **T1** para liberar o **lock_a**
 
+# 3. Experimento 2: o Deadlock
 
-# 3. Experimento 2: Corrigindo o Deadlock
+#### Observação sobre o uso de `join()`
 
+O uso de `t1.join()` e `t2.join()` faz com que a thread principal (main) aguarde até que ambas as threads terminem sua execução. No contexto do deadlock, isso significa que o programa principal ficará bloqueado indefinidamente caso ocorra o impasse, evidenciando claramente o travamento do sistema pela espera circular. Sem o `join()`, o programa poderia finalizar antes das threads realmente travarem, dificultando a observação do deadlock. Portanto, o uso de `join()` é importante para demonstrar o impasse de forma reprodutível e visível.
 
-*Eduardin boi
+```java
+public class DeadlockDemo {
+                                    //monitor
+    static final Object LOCK_A = new Object();
+    static final Object LOCK_B = new Object();
 
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new Thread(() -> {
+            //trava
+            synchronized (LOCK_A) {
+                System.out.println("T1: Peguei LOCK_A, esperando LOCK_B...");
+                dormir(50);
+                synchronized (LOCK_B) {
+                    System.out.println("T1 concluiu");
+                }
+            }
+        });
 
-# Conclusão
+        Thread t2 = new Thread(() -> {
+            //trava
+            synchronized (LOCK_B) {
+                System.out.println("T2: Peguei LOCK_B, esperando LOCK_A...");
+                dormir(50);
+                synchronized (LOCK_A) {
+                    System.out.println("T2 concluiu");
+                }
+            }
+        });
 
-#### *Mini texto*
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
+        System.out.println("Sistema iniciado. Aguardando conclusão...");
+    }
+    //causa o conflito de tempo
+    static void dormir(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
