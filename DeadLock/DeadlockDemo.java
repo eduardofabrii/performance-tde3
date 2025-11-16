@@ -1,11 +1,9 @@
-import java.util.concurrent.*;
-
 public class DeadlockDemo {
                                     //monitor
     static final Object LOCK_A = new Object();
     static final Object LOCK_B = new Object();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Thread t1 = new Thread(() -> {
             //trava
             synchronized (LOCK_A) {
@@ -30,6 +28,9 @@ public class DeadlockDemo {
 
         t1.start();
         t2.start();
+
+        t1.join();
+        t2.join();
         System.out.println("Sistema iniciado. Aguardando conclusão...");
     }
     //causa o conflito de tempo
