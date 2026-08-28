@@ -1,3 +1,7 @@
-# Performance de Sistemas Ciberfisicos
-## TDE 3
-https://youtu.be/AzQ9Nu0VzCo
+# TDE3 - Performance
+
+Trabalho de Desempenho de Estudos (TDE) sobre performance, feito para a faculdade.
+
+## Tecnologias
+
+- Java
